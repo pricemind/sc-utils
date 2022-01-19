@@ -1,7 +1,3 @@
-rom builtins import object
-#!/usr/bin/env python
-# -*- coding: utf-8 -*-
-import signal
 # !/usr/bin/env python
 # -*- coding: utf-8 -*-
 import signal
