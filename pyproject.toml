@@ -1,5 +1,5 @@
 [tool.poetry]
-name = "sc-utils"
+name = "scutils"
 version = "0.1.0"
 description = "Scrapy Cluster utilities"
 authors = ["Ludmil Simeonov <lsimeonov@stellion.net>"]
