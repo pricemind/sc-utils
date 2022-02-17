@@ -1,5 +1,6 @@
 import re
 import sys
+
 from setuptools import setup, find_packages
 
 
@@ -16,7 +17,6 @@ def readme():
 
 install_requires = [
     'python-json-logger==0.1.8', # Updated from 0.1.7
-    'ConcurrentLogHandler>=0.9.1',
     'redis>=3.0',
     'kazoo>=2.4.0', # Updated from 2.2.1
     'mock>=2.0.0',

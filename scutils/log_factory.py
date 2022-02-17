@@ -5,8 +5,8 @@ import logging
 import os
 import sys
 from builtins import object
-from cloghandler import ConcurrentRotatingFileHandler
 from collections import OrderedDict
+
 from pythonjsonlogger import jsonlogger
 
 
@@ -23,6 +23,7 @@ class LogFactory(object):
             self._instance = LogObject(**kwargs)
 
         return self._instance
+
 
 class LogCallbackHandler:
 
@@ -52,29 +53,28 @@ class LogCallbackHandler:
         elif chrs == '>=':
             log_level = log_level[2:]
             log_level_n = self.logger.level_dict[log_level]
-            r = range(log_level_n, MAX_LOG_LEVEL+1)
+            r = range(log_level_n, MAX_LOG_LEVEL + 1)
         elif chrs.startswith('>'):
             log_level = log_level[1:]
             log_level_n = self.logger.level_dict[log_level]
-            r = range(log_level_n+1, MAX_LOG_LEVEL+1)
+            r = range(log_level_n + 1, MAX_LOG_LEVEL + 1)
         elif chrs.startswith('='):
             log_level = log_level[1:]
             log_level_n = self.logger.level_dict[log_level]
-            r = range(log_level_n, log_level_n+1)
+            r = range(log_level_n, log_level_n + 1)
         elif chrs == '*':
-            r = range(MIN_LOG_LEVEL, MAX_LOG_LEVEL+1)
+            r = range(MIN_LOG_LEVEL, MAX_LOG_LEVEL + 1)
         else:
             log_level_n = self.logger.level_dict[log_level]
-            r = range(log_level_n, log_level_n+1)
+            r = range(log_level_n, log_level_n + 1)
 
         return list(r)
 
-    def is_subdict(self, a,b):
+    def is_subdict(self, a, b):
         '''
         Return True if a is a subdict of b
         '''
-        return all((k in b and b[k]==v) for k,v in a.items())
-
+        return all((k in b and b[k] == v) for k, v in a.items())
 
     def register_callback(self, log_level, fn, criteria=None):
         criteria = criteria or {}
@@ -89,7 +89,6 @@ class LogCallbackHandler:
         for log_n in log_range:
             level = num_to_level_map[log_n]
             self.callbacks[level].append((fn, criteria))
-
 
     def fire_callbacks(self, log_level, log_message=None, log_extra=None):
         log_extra = log_extra or {}
@@ -164,16 +163,14 @@ class LogObject(object):
                 if exception.errno != errno.EEXIST:
                     raise
 
-            file_handler = ConcurrentRotatingFileHandler(dir + '/' + file,
-                                                         maxBytes=bytes,
-                                                         backupCount=backups)
+            file_handler = logging.FileHandler(filename=dir + '/' + file)
             file_handler.setLevel(logging.DEBUG)
             formatter = self._get_formatter(json)
             file_handler.setFormatter(formatter)
             self.logger.addHandler(file_handler)
             self._check_log_level(level)
             self.debug("Logging to file: {file}".format(
-                    file=dir+'/'+file))
+                file=dir + '/' + file))
 
     def _check_log_level(self, level):
         '''
@@ -183,8 +180,8 @@ class LogObject(object):
         '''
         if level not in list(self.level_dict.keys()):
             self.log_level = 'DEBUG'
-            self.logger.warn("Unknown log level '{lev}', defaulting to DEBUG"
-                             .format(lev=level))
+            self.logger.warning("Unknown log level '{lev}', defaulting to DEBUG"
+                                .format(lev=level))
 
     def _get_formatter(self, json):
         '''
@@ -197,70 +194,82 @@ class LogObject(object):
         else:
             return logging.Formatter(self.format_string)
 
-    def debug(self, message, extra={}):
+    def debug(self, message, extra=None):
         '''
         Writes an error message to the log
 
         @param message: The message to write
         @param extra: The extras object to pass in
         '''
+        if extra is None:
+            extra = {}
         if self.level_dict['DEBUG'] >= self.level_dict[self.log_level]:
             extras = self.add_extras(extra, "DEBUG")
             self._write_message(message, extras)
             self.cb_handler.fire_callbacks('DEBUG', message, extras)
 
-    def info(self, message, extra={}):
+    def info(self, message, extra=None):
         '''
         Writes an info message to the log
 
         @param message: The message to write
         @param extra: The extras object to pass in
         '''
+        if extra is None:
+            extra = {}
         if self.level_dict['INFO'] >= self.level_dict[self.log_level]:
             extras = self.add_extras(extra, "INFO")
             self._write_message(message, extras)
             self.cb_handler.fire_callbacks('INFO', message, extras)
 
-    def warn(self, message, extra={}):
+    def warn(self, message, extra=None):
         '''
         Writes a warning message to the log
 
         @param message: The message to write
         @param extra: The extras object to pass in
         '''
+        if extra is None:
+            extra = {}
         self.warning(message, extra)
 
-    def warning(self, message, extra={}):
+    def warning(self, message, extra=None):
         '''
         Writes a warning message to the log
 
         @param message: The message to write
         @param extra: The extras object to pass in
         '''
+        if extra is None:
+            extra = {}
         if self.level_dict['WARNING'] >= self.level_dict[self.log_level]:
             extras = self.add_extras(extra, "WARNING")
             self._write_message(message, extras)
             self.cb_handler.fire_callbacks('WARNING', message, extras)
 
-    def error(self, message, extra={}):
+    def error(self, message, extra=None):
         '''
         Writes an error message to the log
 
         @param message: The message to write
         @param extra: The extras object to pass in
         '''
+        if extra is None:
+            extra = {}
         if self.level_dict['ERROR'] >= self.level_dict[self.log_level]:
             extras = self.add_extras(extra, "ERROR")
             self._write_message(message, extras)
             self.cb_handler.fire_callbacks('ERROR', message, extras)
 
-    def critical(self, message, extra={}):
+    def critical(self, message, extra=None):
         '''
         Writes a critical message to the log
 
         @param message: The message to write
         @param extra: The extras object to pass in
         '''
+        if extra is None:
+            extra = {}
         if self.level_dict['CRITICAL'] >= self.level_dict[self.log_level]:
             extras = self.add_extras(extra, "CRITICAL")
             self._write_message(message, extras)
