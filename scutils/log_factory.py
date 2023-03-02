@@ -1,12 +1,12 @@
 import copy
 import datetime
-import errno
 import logging
 import os
-import sys
-from builtins import object
 from collections import OrderedDict
 
+import errno
+import sys
+from builtins import object
 from pythonjsonlogger import jsonlogger
 
 
@@ -334,7 +334,12 @@ class LogObject(object):
         '''
         Adds the log level to the dict object
         '''
-        my_copy = copy.deepcopy(dict)
+        ## Fixed by me as the original code was not able to pickle
+        ## FIXME: This is a hack, we should be able to pickle the dict
+        try:
+            my_copy = copy.deepcopy(dict)
+        except TypeError:
+            return dict
         if 'level' not in my_copy:
             my_copy['level'] = level
         if 'timestamp' not in my_copy:
